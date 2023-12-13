@@ -3,10 +3,13 @@ import MyContext from "./MyContext"
 
 const ContextProvider = (props) => {
   const [idToken, setIdToken] = useState("")
-  console.log(idToken)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
   const value = {
     idToken,
     setIdToken,
+    setIsLoggedIn,
+    isLoggedIn,
   }
   return <MyContext.Provider value={value}>{props.children}</MyContext.Provider>
 }

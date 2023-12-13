@@ -38,6 +38,7 @@ const SignUpPage = () => {
         await response.json().then((data) => {
           console.log(data)
           context.setIdToken(data.idToken)
+          context.setIsLoggedIn(true)
         })
         navigate("/")
       } catch (error) {
