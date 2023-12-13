@@ -82,8 +82,6 @@ const SignUpPage = () => {
   const viewportHeight =
     window.innerHeight || document.documentElement.clientHeight
 
-  console.log(`Viewport width: ${viewportWidth}px`)
-  console.log(`Viewport height: ${viewportHeight}px`)
   const hide = {
     display: "none",
   }

@@ -1,9 +1,29 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import MyContext from "../Context/MyContext"
 const ProfileData = () => {
-  const context = useContext(MyContext)
+  const { idToken, setIsProfileComplete } = useContext(MyContext)
   const [fullName, setFullName] = useState("")
   const [photoUrl, setPhotoUrl] = useState("")
+  useEffect(() => {
+    console.log(idToken)
+    fetch(
+      "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAray5G5GdSNqIx_WRwfps8LT3Ou-mNTUw",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idToken: idToken,
+        }),
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setFullName(data.users[0].displayName)
+        setPhotoUrl(data.users[0].photoUrl)
+      })
+  }, [idToken])
 
   const handleUpdate = async () => {
     const endpoint = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAray5G5GdSNqIx_WRwfps8LT3Ou-mNTUw`
@@ -15,7 +35,7 @@ const ProfileData = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          idToken: context.idToken,
+          idToken: idToken,
           displayName: fullName,
           photoUrl: photoUrl,
           returnSecureToken: true,
