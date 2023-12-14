@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import MyContext from "../Context/MyContext"
 const ProfileData = () => {
+  const navigate = useNavigate()
   const { idToken, setIsProfileComplete } = useContext(MyContext)
   const [fullName, setFullName] = useState("")
   const [photoUrl, setPhotoUrl] = useState("")
@@ -48,6 +50,8 @@ const ProfileData = () => {
 
       const data = await response.json()
       console.log("Profile updated successfully:", data)
+      setIsProfileComplete(true)
+      navigate("/")
 
       // Reload the user to get the updated profile data
     } catch (error) {
@@ -56,12 +60,12 @@ const ProfileData = () => {
   }
 
   const handleCancel = () => {
-    console.log("Update canceled")
+    navigate("/")
   }
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-md shadow-md">
-      <h2 className="text-2xl font-bold mb-6">Contact Details</h2>
+      <h2 className="text-2xl font-bold mb-6">Profile Details</h2>
 
       <div className="mb-4">
         <label
