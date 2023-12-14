@@ -39,6 +39,8 @@ const SignUpPage = () => {
           console.log(data)
           context.setIdToken(data.idToken)
           context.setIsLoggedIn(true)
+          console.log(data.email)
+          context.setEmail(data.email)
         })
         navigate("/")
       } catch (error) {

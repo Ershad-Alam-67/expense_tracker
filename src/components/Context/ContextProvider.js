@@ -2,11 +2,28 @@ import React, { useContext, useEffect, useState } from "react"
 import MyContext from "./MyContext"
 
 const ContextProvider = (props) => {
-  const [idToken, setIdToken] = useState("")
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [isProfileComplete, setIsProfileComplete] = useState(true)
+  const user_info = JSON.parse(localStorage.getItem("user")) || {}
+  console.log(user_info.idToken)
+  const [idToken, setIdToken] = useState(user_info.idToken || "")
+  const [isLoggedIn, setIsLoggedIn] = useState(user_info.isLoggedIn || false)
+  const [isProfileComplete, setIsProfileComplete] = useState(
+    user_info.isProfileComplete || true
+  )
+  console.log("pc?", isProfileComplete)
+  console.log("li", isLoggedIn)
   const [isVerified, setIsVerified] = useState(false)
+  const [email, setEmail] = useState("")
   console.log("isver ", isVerified)
+  useEffect(() => {
+    const obj = {
+      idToken: idToken,
+      isVerified: isVerified,
+      isProfileComplete: isProfileComplete,
+      isLoggedIn: isLoggedIn,
+    }
+
+    localStorage.setItem("user", JSON.stringify(obj))
+  }, [idToken, isVerified, isProfileComplete, isLoggedIn])
   useEffect(() => {
     if (isLoggedIn) {
       fetch(
@@ -81,6 +98,8 @@ const ContextProvider = (props) => {
     setIsProfileComplete,
     isVerified,
     setIsVerified,
+    email,
+    setEmail,
   }
   return <MyContext.Provider value={value}>{props.children}</MyContext.Provider>
 }

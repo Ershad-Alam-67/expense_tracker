@@ -1,7 +1,13 @@
-import React from "react"
+import React, { useContext } from "react"
 import Logo from "../../assets/logo.png"
 import { NavLink } from "react-router-dom"
+import MyContext from "../Context/MyContext"
 const Header = () => {
+  const context = useContext(MyContext)
+  const handleLogout = () => {
+    localStorage.removeItem("user")
+    context.setIsLoggedIn(false)
+  }
   return (
     <div className=" flex justify-between  drop-shadow items-center w-screen   sticky shadow-black  shadow-md bg-customColor  h-12">
       <img src={Logo} className="  absolute left-8 h-[110%]"></img>
@@ -27,6 +33,14 @@ const Header = () => {
           </li>
         </ul>
       </nav>
+      {context.isLoggedIn && (
+        <button
+          onClick={handleLogout}
+          className=" absolute left-[88%] px-5 rounded-md py-1 font-bold  bg-cyan-500"
+        >
+          Logout
+        </button>
+      )}
     </div>
   )
 }
