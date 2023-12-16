@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import MyContext from "../Context/MyContext"
+import HomeBG from "../../assets/homebg.png"
 
 const Home = () => {
   const context = useContext(MyContext)
@@ -56,7 +57,7 @@ const Home = () => {
   console.log(context.isProfileComplete)
 
   return (
-    <div className="p-3 flex justify-center">
+    <div className="p-3 bg-cover h-screen justify-center bg-customBg">
       <div className="max-w-md mx-auto bg-cyan-950  flex flex-col rounded-md overflow-hidden shadow-md p-4">
         <h1 className="text-2xl font-bold mb-4 text-stone-200">
           Welcome to Expense Tracker

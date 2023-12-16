@@ -4,6 +4,38 @@ import MyContext from "./MyContext"
 const ContextProvider = (props) => {
   const user_info = JSON.parse(localStorage.getItem("user")) || {}
   console.log(user_info.idToken)
+  const [expenses, setExpenses] = useState([
+    {
+      money: "22",
+      category: "Food",
+      description: " Vega Park Samosa",
+    },
+    {
+      money: "100",
+      category: "petrol",
+      description: " bike fuel",
+    },
+    {
+      money: "33",
+      category: "",
+      description: "",
+    },
+    {
+      money: "33",
+      category: "",
+      description: "",
+    },
+    {
+      money: "33",
+      category: "",
+      description: "",
+    },
+    {
+      money: "33",
+      category: "",
+      description: "",
+    },
+  ])
   const [idToken, setIdToken] = useState(user_info.idToken || "")
   const [isLoggedIn, setIsLoggedIn] = useState(user_info.isLoggedIn || false)
   const [isProfileComplete, setIsProfileComplete] = useState(
@@ -100,6 +132,8 @@ const ContextProvider = (props) => {
     setIsVerified,
     email,
     setEmail,
+    setExpenses,
+    expenses,
   }
   return <MyContext.Provider value={value}>{props.children}</MyContext.Provider>
 }

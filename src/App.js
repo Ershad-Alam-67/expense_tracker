@@ -6,6 +6,7 @@ import Home from "./components/Home/Home"
 import ContextProvider from "./components/Context/ContextProvider"
 import ProfileData from "./components/Home/ProfileData"
 import MyContext from "./components/Context/MyContext"
+import Expenses from "./components/Expenses/Expenses"
 
 function App() {
   const context = useContext(MyContext)
@@ -25,6 +26,10 @@ function App() {
           <Route
             path="/complete-profile"
             element={<ProfileData></ProfileData>}
+          ></Route>
+          <Route
+            path="/expenses"
+            element={context.isLoggedIn ? <Expenses /> : <SignUpPage />}
           ></Route>
         </Routes>
       </div>

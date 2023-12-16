@@ -17,17 +17,22 @@ const Header = () => {
       <nav className=" absolute left-80 ">
         <ul className=" flex items-center font-semibold text-cyan-400 p-3 ">
           <li>
-            <NavLink to="/" exact className="pr-10" activeClassName="underline">
-              Home
+            <NavLink
+              to="/"
+              exact
+              className="pr-10 "
+              activeClassName="underline"
+            >
+              Profile
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/expenses" className=" pr-10" activeClassName="active">
+              Expenses
             </NavLink>
           </li>
           <li>
             <NavLink to="/about" className=" pr-10" activeClassName="active">
-              Products
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/contact" className=" pr-10" activeClassName="active">
               About Us
             </NavLink>
           </li>
