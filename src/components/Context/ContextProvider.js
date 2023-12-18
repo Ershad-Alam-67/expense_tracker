@@ -4,45 +4,27 @@ import MyContext from "./MyContext"
 const ContextProvider = (props) => {
   const user_info = JSON.parse(localStorage.getItem("user")) || {}
   console.log(user_info.idToken)
-  const [expenses, setExpenses] = useState([
-    {
-      money: "22",
-      category: "Food",
-      description: " Vega Park Samosa",
-    },
-    {
-      money: "100",
-      category: "petrol",
-      description: " bike fuel",
-    },
-    {
-      money: "33",
-      category: "",
-      description: "",
-    },
-    {
-      money: "33",
-      category: "",
-      description: "",
-    },
-    {
-      money: "33",
-      category: "",
-      description: "",
-    },
-    {
-      money: "33",
-      category: "",
-      description: "",
-    },
-  ])
+  const [expenses, setExpenses] = useState([])
   const [idToken, setIdToken] = useState(user_info.idToken || "")
   const [isLoggedIn, setIsLoggedIn] = useState(user_info.isLoggedIn || false)
   const [isProfileComplete, setIsProfileComplete] = useState(
     user_info.isProfileComplete || true
   )
+  const End_Point = ""
   console.log("pc?", isProfileComplete)
   console.log("li", isLoggedIn)
+  useEffect(() => {
+    fetch(
+      "https://expense-tracker-178b6-default-rtdb.firebaseio.com/expenses.json"
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const expensesArray = Object.keys(data).map((item) => data[item])
+
+        setExpenses(expensesArray)
+      })
+  }, [])
+
   const [isVerified, setIsVerified] = useState(false)
   const [email, setEmail] = useState("")
   console.log("isver ", isVerified)
