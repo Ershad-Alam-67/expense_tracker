@@ -3,16 +3,21 @@ import MyContext from "../Context/MyContext"
 import "./Expenses.css"
 import bread from "../../assets/food.png"
 import fuel from "../../assets/fuel.png"
+import Edit from "../../assets/edit2.png"
+import Delete from "../../assets/delete.png"
 
 const Expenses = () => {
   const context = useContext(MyContext)
   const expenses = context.expenses
+  const [itemToUpdate, setItemToUpdate] = useState("")
+  const [updateMode, setUpdateMOde] = useState(false)
   const [expense, setExpense] = useState({
     money: "",
     category: "",
     description: "",
   })
-
+  const [expenseToEdit, setExpenseToEdit] = useState("")
+  console.log(expenseToEdit, "d")
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setExpense((prevExpense) => ({ ...prevExpense, [name]: value }))
@@ -20,6 +25,7 @@ const Expenses = () => {
 
   const handleAddExpense = async (e) => {
     e.preventDefault()
+    console.log("inside add")
     await context.setExpenses((prev) => [...prev, expense])
     await fetch(
       "https://expense-tracker-178b6-default-rtdb.firebaseio.com/expenses.json",
@@ -38,7 +44,6 @@ const Expenses = () => {
     })
   }
 
-  // Group expenses by category
   const groupedExpenses = {}
   expenses.forEach((expenseItem) => {
     const { category } = expenseItem
@@ -49,7 +54,7 @@ const Expenses = () => {
   })
 
   const currentBalance = 700
-  const totalCredit = 500 // Replace with your actual total credit calculation
+  const totalCredit = 500
   const totalExpenses = expenses.reduce(
     (total, expenseItem) => total + parseFloat(expenseItem.money),
     0
@@ -63,15 +68,75 @@ const Expenses = () => {
     ),
   }))
 
-  // Sort categories by total spent in descending order
   const sortedCategories = categoryExpenses.sort(
     (a, b) => b.totalSpent - a.totalSpent
   )
+  const editExpense = () => {}
+  const handelDelete = async (a) => {
+    try {
+      fetch(
+        "https://expense-tracker-178b6-default-rtdb.firebaseio.com/expenses.json"
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          const get_ = Object.keys(data).find(
+            (item) => data[item].description === a
+          )
+          fetch(
+            `https://expense-tracker-178b6-default-rtdb.firebaseio.com/expenses/${get_}.json`,
+            {
+              method: "DELETE",
+            }
+          ).then(() => {
+            context.setTrigger((pre) => !pre)
+          })
+        })
+    } catch (error) {}
+  }
+  const handelUpdate = (a) => {
+    setExpense(a)
+    setItemToUpdate(a)
+    setUpdateMOde(true)
+  }
+  const updateItem = (e) => {
+    e.preventDefault()
+    console.log("updating")
+    fetch(
+      "https://expense-tracker-178b6-default-rtdb.firebaseio.com/expenses.json"
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const get_ = Object.keys(data).find(
+          (item) => data[item].description === itemToUpdate.description
+        )
+        console.log(expense)
+        fetch(
+          `https://expense-tracker-178b6-default-rtdb.firebaseio.com/expenses/${get_}.json`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(expense),
+          }
+        ).then(() => {
+          context.setTrigger((pre) => !pre)
+          console.log("updated")
+          setUpdateMOde(false)
+          setExpense({
+            money: "",
+            category: "",
+            description: "",
+          })
+        })
+      })
+  }
+
   console.log(sortedCategories)
   return (
     <div className="flex flex-col font-bold bg-customBg items-center p-5 main">
       <form
-        onSubmit={handleAddExpense}
+        onSubmit={!updateMode ? handleAddExpense : updateItem}
         className="flex flex-col items-center w-[80%] p-1 rounded-md"
       >
         <div className="flex rounded-md p-4">
@@ -132,7 +197,7 @@ const Expenses = () => {
           type="submit"
           className="bg-blue-500 text-white px-32 text-lg py-2 rounded-md"
         >
-          Add Expense
+          {!updateMode ? "Add Expense" : "Update"}
         </button>
       </form>
       <div className="w-[80%] flex justify-between  mt-4 ">
@@ -192,18 +257,49 @@ const Expenses = () => {
                   ></img>
                 </h3>
                 {groupedExpenses[category].map((expenseItem, itemIndex) => (
-                  <li
-                    key={itemIndex}
-                    className="flex my-1 p-2 bg-customColor rounded"
-                  >
-                    <h1 className="px-2 w-[20%] text-white">
-                      {expenseItem.money}
-                    </h1>
+                  <div className="  relative">
+                    <li
+                      key={itemIndex}
+                      onClick={() => {
+                        if (
+                          expenseToEdit.description === expenseItem.description
+                        ) {
+                          setExpenseToEdit("")
+                          return
+                        }
+                        setExpenseToEdit(expenseItem)
+                      }}
+                      className="flex my-1 p-2 cursor-pointer relative min-w-full  bg-customColor rounded"
+                    >
+                      <h1 className="px-2 w-[20%] text-white">
+                        {expenseItem.money}
+                      </h1>
 
-                    <h1 className="px-2 w-[50%] text-white">
-                      {expenseItem.description}
-                    </h1>
-                  </li>
+                      <h1 className="px-2 w-[50%] break-word   text-white">
+                        {expenseItem.description}
+                      </h1>
+                    </li>
+                    {expenseItem.description === expenseToEdit.description && (
+                      <div className=" relative justify-around h-10 flex ">
+                        <button
+                          onClick={() => {
+                            handelUpdate(expenseItem)
+                          }}
+                          className="  flex justify-center items-center  w-[40%]"
+                        >
+                          <img src={Edit} className=" h-[50%]  "></img>
+                        </button>
+                        <button
+                          onClick={() => {
+                            handelDelete(expenseItem.description)
+                          }}
+                          className="  flex justify-center items-center  w-[40%]"
+                        >
+                          <img src={Delete} className=" h-[50%]  "></img>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             ))}

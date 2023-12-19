@@ -7,6 +7,7 @@ const ContextProvider = (props) => {
   const [expenses, setExpenses] = useState([])
   const [idToken, setIdToken] = useState(user_info.idToken || "")
   const [isLoggedIn, setIsLoggedIn] = useState(user_info.isLoggedIn || false)
+  const [trigger, setTrigger] = useState(false)
   const [isProfileComplete, setIsProfileComplete] = useState(
     user_info.isProfileComplete || true
   )
@@ -19,11 +20,14 @@ const ContextProvider = (props) => {
     )
       .then((res) => res.json())
       .then((data) => {
+        if (!data) {
+          return setExpenses([])
+        }
         const expensesArray = Object.keys(data).map((item) => data[item])
-
+        console.log(expensesArray, "ea")
         setExpenses(expensesArray)
       })
-  }, [])
+  }, [trigger])
 
   const [isVerified, setIsVerified] = useState(false)
   const [email, setEmail] = useState("")
@@ -116,6 +120,7 @@ const ContextProvider = (props) => {
     setEmail,
     setExpenses,
     expenses,
+    setTrigger,
   }
   return <MyContext.Provider value={value}>{props.children}</MyContext.Provider>
 }

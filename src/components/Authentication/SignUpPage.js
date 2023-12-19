@@ -188,7 +188,7 @@ const SignUpPage = () => {
           }}
           className=" bg-cyan-600   text-white w-full mt-3  p-2 rounded-md text-center"
         >
-          {showLogInPage ? "Have an account? Login!" : "New User? Sign Up!"}
+          {!showLogInPage ? "Have an account? Login!" : "New User? Sign Up!"}
         </button>
       </div>
     </div>
