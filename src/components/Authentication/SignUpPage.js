@@ -2,8 +2,13 @@ import React, { useState, useContext } from "react"
 import BgImage from "../../assets/bgimg.jpg"
 import MyContext from "../Context/MyContext"
 import { useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { authActions } from "../Store/Store"
 
 const SignUpPage = () => {
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
+  const idToken = useSelector((state) => state.auth.idToken)
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const context = useContext(MyContext)
   const [email, setEmail] = useState("")
@@ -63,8 +68,11 @@ const SignUpPage = () => {
 
         const data = await response.json()
         console.log("you are logged in", data)
-        context.setIdToken(data.idToken)
-        context.setIsLoggedIn(true)
+        dispatch(authActions.setIdToken(data.idToken))
+        console.log("after dis")
+        // context.setIdToken(data.idToken)
+        dispatch(authActions.setLoggedIn({ tode: true }))
+        // context.setIsLoggedIn(true)
         context.setEmail(data.email)
         navigate("/")
       } catch (error) {

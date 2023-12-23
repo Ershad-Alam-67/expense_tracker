@@ -1,13 +1,14 @@
 import React, { useState, useContext, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import MyContext from "../Context/MyContext"
+import { useSelector } from "react-redux"
 const ProfileData = () => {
   const navigate = useNavigate()
-  const { idToken, setIsProfileComplete } = useContext(MyContext)
+  const idToken = useSelector((state) => state.auth.idToken)
+  const { setIsProfileComplete } = useContext(MyContext)
   const [fullName, setFullName] = useState("")
   const [photoUrl, setPhotoUrl] = useState("")
   useEffect(() => {
-    console.log(idToken)
     fetch(
       "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAray5G5GdSNqIx_WRwfps8LT3Ou-mNTUw",
       {

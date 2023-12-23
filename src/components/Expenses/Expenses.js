@@ -5,9 +5,13 @@ import bread from "../../assets/food.png"
 import fuel from "../../assets/fuel.png"
 import Edit from "../../assets/edit2.png"
 import Delete from "../../assets/delete.png"
+import { expensesActions } from "../Store/Store"
+import { useSelector, useDispatch } from "react-redux"
 
 const Expenses = () => {
   const context = useContext(MyContext)
+  const dispatch = useDispatch()
+  const expensesState = useSelector((state) => state.expenses)
   const expenses = context.expenses
   const [itemToUpdate, setItemToUpdate] = useState("")
   const [updateMode, setUpdateMOde] = useState(false)
@@ -26,7 +30,8 @@ const Expenses = () => {
   const handleAddExpense = async (e) => {
     e.preventDefault()
     console.log("inside add")
-    await context.setExpenses((prev) => [...prev, expense])
+    dispatch(expensesActions.setExpenses([...expensesState.expenses, expense]))
+    // await context.setExpenses((prev) => [...prev, expense])
     await fetch(
       "https://expense-tracker-178b6-default-rtdb.firebaseio.com/expenses.json",
       {
@@ -45,7 +50,7 @@ const Expenses = () => {
   }
 
   const groupedExpenses = {}
-  expenses.forEach((expenseItem) => {
+  expensesState.expenses.forEach((expenseItem) => {
     const { category } = expenseItem
     if (!groupedExpenses[category]) {
       groupedExpenses[category] = []
@@ -55,7 +60,7 @@ const Expenses = () => {
 
   const currentBalance = 700
   const totalCredit = 500
-  const totalExpenses = expenses.reduce(
+  const totalExpenses = expensesState.expenses.reduce(
     (total, expenseItem) => total + parseFloat(expenseItem.money),
     0
   )
@@ -88,7 +93,8 @@ const Expenses = () => {
               method: "DELETE",
             }
           ).then(() => {
-            context.setTrigger((pre) => !pre)
+            dispatch(expensesActions.updateExpenses())
+            // context.setTrigger((pre) => !pre)
           })
         })
     } catch (error) {}
@@ -120,7 +126,8 @@ const Expenses = () => {
             body: JSON.stringify(expense),
           }
         ).then(() => {
-          context.setTrigger((pre) => !pre)
+          // context.setTrigger((pre) => !pre)
+          dispatch(expensesActions.updateExpenses())
           console.log("updated")
           setUpdateMOde(false)
           setExpense({
@@ -134,7 +141,7 @@ const Expenses = () => {
 
   console.log(sortedCategories)
   return (
-    <div className="flex flex-col font-bold bg-customBg items-center p-5 main">
+    <div className="flex flex-col font-bold h-[100vh] bg-customBg items-center p-5 main">
       <form
         onSubmit={!updateMode ? handleAddExpense : updateItem}
         className="flex flex-col items-center w-[80%] p-1 rounded-md"
@@ -200,8 +207,8 @@ const Expenses = () => {
           {!updateMode ? "Add Expense" : "Update"}
         </button>
       </form>
-      <div className="w-[80%] flex justify-between  mt-4 ">
-        <div className="w-[60%]   grid grid-cols-2  p-4">
+      <div className="w-[80%] flex justify-between   mt-4 ">
+        <div className="w-[60%]   grid grid-cols-2  h-fit  p-4">
           <div className="  grid grid-rows-2">
             <div className="bg-customColor p-2 m-2 mx-5">
               <p className="text-white font-bold">Current Balance</p>

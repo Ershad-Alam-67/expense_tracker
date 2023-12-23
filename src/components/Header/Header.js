@@ -2,14 +2,18 @@ import React, { useContext } from "react"
 import Logo from "../../assets/logo.png"
 import { NavLink } from "react-router-dom"
 import MyContext from "../Context/MyContext"
+import { useSelector, useDispatch } from "react-redux"
+import { authActions } from "../Store/Store"
 const Header = () => {
   const context = useContext(MyContext)
+  const dispatch = useDispatch()
   const handleLogout = () => {
     localStorage.removeItem("user")
-    context.setIsLoggedIn(false)
+    dispatch(authActions.setLoggedIn(false))
+    // context.setIsLoggedIn(false)
   }
   return (
-    <div className=" flex justify-between  drop-shadow items-center w-screen   sticky shadow-black  shadow-md bg-customColor  h-12">
+    <div className=" flex justify-between  drop-shadow items-center    sticky shadow-black  shadow-md bg-customColor  h-12">
       <img src={Logo} className="  absolute left-8 h-[110%]"></img>
       <h1 className=" absolute left-24 text-customText font-bold text-xl ">
         Expense Tracker
@@ -41,7 +45,7 @@ const Header = () => {
       {context.isLoggedIn && (
         <button
           onClick={handleLogout}
-          className=" absolute left-[88%] px-5 rounded-md py-1 font-bold  bg-cyan-500"
+          className=" absolute left-[85%] px-5 rounded-md py-1 font-bold  bg-cyan-500"
         >
           Logout
         </button>
