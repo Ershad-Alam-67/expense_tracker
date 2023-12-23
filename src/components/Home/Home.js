@@ -10,6 +10,7 @@ const Home = () => {
   const authState = useSelector((state) => state.auth)
   const context = useContext(MyContext)
   const dispatch = useDispatch()
+  const darkMode = useSelector((state) => state.themeReducer.darkMode)
   const verifyEmail = async () => {
     await fetch(
       "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAray5G5GdSNqIx_WRwfps8LT3Ou-mNTUw",
@@ -61,9 +62,18 @@ const Home = () => {
         console.error("Error:", error)
       })
   }
+  const getBG = () => {
+    if (darkMode) {
+      return "bg-customBg"
+    } else {
+      return "bg-green-200 "
+    }
+  }
 
   return (
-    <div className="p-3 bg-cover h-screen justify-center bg-customBg">
+    <div
+      className={`p-3 bg-cover h-screen justify-center bg-customBg ${getBG()}`}
+    >
       <div className="max-w-md mx-auto bg-cyan-950  flex flex-col rounded-md overflow-hidden shadow-md p-4">
         <h1 className="text-2xl font-bold mb-4 text-stone-200">
           Welcome to Expense Tracker

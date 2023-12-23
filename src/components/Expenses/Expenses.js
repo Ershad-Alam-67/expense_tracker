@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import MyContext from "../Context/MyContext"
 import "./Expenses.css"
 import bread from "../../assets/food.png"
@@ -7,14 +7,17 @@ import Edit from "../../assets/edit2.png"
 import Delete from "../../assets/delete.png"
 import { expensesActions } from "../Store/Store"
 import { useSelector, useDispatch } from "react-redux"
+import Download from "../../assets/download.png"
 
 const Expenses = () => {
   const context = useContext(MyContext)
   const dispatch = useDispatch()
   const expensesState = useSelector((state) => state.expenses)
+  const darkMode = useSelector((state) => state.themeReducer.darkMode)
+  const activePremium = useSelector((state) => state.expenses.activePremium)
   const expenses = context.expenses
   const [itemToUpdate, setItemToUpdate] = useState("")
-  const [updateMode, setUpdateMOde] = useState(false)
+  const [updateMode, setUpdateMode] = useState(false)
   const [expense, setExpense] = useState({
     money: "",
     category: "",
@@ -64,7 +67,14 @@ const Expenses = () => {
     (total, expenseItem) => total + parseFloat(expenseItem.money),
     0
   )
-
+  useEffect(() => {
+    if (totalExpenses >= 10000) {
+      dispatch(expensesActions.setPremiumOption(true))
+      console.log("UE called")
+    }
+  }, [totalExpenses])
+  console.log(expensesState.premiumOption, "po")
+  console.log("total=", totalExpenses)
   const categoryExpenses = Object.keys(groupedExpenses).map((category) => ({
     category,
     totalSpent: groupedExpenses[category].reduce(
@@ -94,6 +104,8 @@ const Expenses = () => {
             }
           ).then(() => {
             dispatch(expensesActions.updateExpenses())
+            dispatch(expensesActions.setPremiumOption(false))
+            console.log(expensesState, "es")
             // context.setTrigger((pre) => !pre)
           })
         })
@@ -102,7 +114,7 @@ const Expenses = () => {
   const handelUpdate = (a) => {
     setExpense(a)
     setItemToUpdate(a)
-    setUpdateMOde(true)
+    setUpdateMode(true)
   }
   const updateItem = (e) => {
     e.preventDefault()
@@ -129,7 +141,7 @@ const Expenses = () => {
           // context.setTrigger((pre) => !pre)
           dispatch(expensesActions.updateExpenses())
           console.log("updated")
-          setUpdateMOde(false)
+          setUpdateMode(false)
           setExpense({
             money: "",
             category: "",
@@ -138,16 +150,43 @@ const Expenses = () => {
         })
       })
   }
+  const getBG = () => {
+    if (darkMode) {
+      return "bg-customBg"
+    } else {
+      return "bg-green-200 "
+    }
+  }
+  const downloadCSV = () => {
+    const csvContent = "data:text/csv;charset=utf-8,"
+    const header = Object.keys(expensesState.expenses[0]).join(",")
+    const data = expensesState.expenses.map((expense) =>
+      Object.values(expense).join(",")
+    )
+
+    const csv = `${header}\n${data.join("\n")}`
+    const encodedURI = encodeURI(csvContent + csv)
+
+    // Create a temporary anchor element and trigger the download
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedURI)
+    link.setAttribute("download", "expenses.csv")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   console.log(sortedCategories)
   return (
-    <div className="flex flex-col font-bold h-[100vh] bg-customBg items-center p-5 main">
+    <div
+      className={`flex flex-col font-bold h-[100vh]  items-center p-5 main ${getBG()}`}
+    >
       <form
         onSubmit={!updateMode ? handleAddExpense : updateItem}
-        className="flex flex-col items-center w-[80%] p-1 rounded-md"
+        className="flex flex-col  items-center w-[80%] p-1 rounded-md"
       >
-        <div className="flex rounded-md p-4">
-          <div className="flex flex-col p-6 rounded bg-customColor text-white mr-4">
+        <div className="flex rounded-md  p-4">
+          <div className="flex flex-col p-6 rounded bg-customColor text-gray-400 mr-4">
             <label htmlFor="money" className="mb-2 text-center ">
               Money Expense:
             </label>
@@ -162,7 +201,7 @@ const Expenses = () => {
             />
           </div>
 
-          <div className="flex flex-col p-6 rounded bg-customColor text-white mr-4">
+          <div className="flex flex-col p-6 rounded text- bg-customColor text-white mr-4">
             <label htmlFor="category" className="mb-2 text-white">
               Category:
             </label>
@@ -202,7 +241,7 @@ const Expenses = () => {
 
         <button
           type="submit"
-          className="bg-blue-500 text-white px-32 text-lg py-2 rounded-md"
+          className=" bg-emerald-700 hover:bg-sky-900 text-white px-32 text-lg py-2 rounded-md"
         >
           {!updateMode ? "Add Expense" : "Update"}
         </button>
@@ -215,8 +254,8 @@ const Expenses = () => {
               <p className="text-white">${currentBalance}</p>
             </div>
             <div className="bg-customColor p-2 m-2 mx-5">
-              <p className="text-white font-bold">Total Credit</p>
-              <p className="text-white">${totalCredit}</p>
+              <p className="text-white font-bold">Total Expenses</p>
+              <p className="text-white">${totalExpenses}</p>
             </div>
           </div>
           <div className="  grid grid-rows-2">
@@ -250,8 +289,15 @@ const Expenses = () => {
             </div>
           </div>
         </div>
-        <div className="w-[40%] rounded-xl max-h-[50vh] custom-scrollbar overflow-y-auto">
-          <h2 className="text-center py-2 text-white">Expenses</h2>
+        <div className="w-[40%] relative rounded-xl max-h-[50vh] custom-scrollbar overflow-y-auto">
+          <h2 className="text-center py-2 text-gray-500">Expenses</h2>
+          {activePremium && (
+            <img
+              src={Download}
+              onClick={downloadCSV}
+              className=" cursor-pointer absolute h-8 p-1 bg-green-300 rounded-xl   px-4 right-2 top-2"
+            ></img>
+          )}
           <ul className="p-6 font-normal flex flex-col py-2">
             {Object.keys(groupedExpenses).map((category, index) => (
               <div key={index} className="flex flex-col mb-4">

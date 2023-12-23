@@ -31,6 +31,8 @@ export const authActions = authSlice.actions
 const expensesInitialState = {
   expenses: [],
   updateExpenses: true,
+  premiumOption: false,
+  activePremium: false,
 }
 const expensesSlice = createSlice({
   name: "expensesSlice",
@@ -42,13 +44,35 @@ const expensesSlice = createSlice({
     updateExpenses: (state, action) => {
       state.updateExpenses = !state.updateExpenses
     },
+    setPremiumOption: (state, action) => {
+      state.premiumOption = action.payload
+    },
+    setActivePremium: (state, action) => {
+      state.activePremium = action.payload
+    },
   },
 })
+const themeSlice = createSlice({
+  name: "themeSlice",
+  initialState: {
+    darkMode: true,
+  },
+  reducers: {
+    setTheme: (state) => {
+      state.darkMode = !state.darkMode
+    },
+  },
+})
+export const themeActions = themeSlice.actions
+
 const Store = configureStore({
   reducer: {
     auth: authSlice.reducer,
     expenses: expensesSlice.reducer,
+    themeReducer: themeSlice.reducer,
   },
 })
+const getStore = Store.getState()
+console.log("store", getStore)
 export const expensesActions = expensesSlice.actions
 export default Store
