@@ -9,6 +9,7 @@ import Light from "../../assets/light-mode.png"
 const Header = () => {
   const context = useContext(MyContext)
   const dispatch = useDispatch()
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn)
   const premiumOption = useSelector((state) => state.expenses.premiumOption)
   const darkMode = useSelector((state) => state.themeReducer.darkMode)
   const activePremium = useSelector((state) => state.expenses.activePremium)
@@ -70,7 +71,7 @@ const Header = () => {
           Active Premium
         </button>
       )}
-      {context.isLoggedIn && (
+      {isLoggedIn && (
         <button
           onClick={handleLogout}
           className=" absolute left-[85%] px-5 rounded-md py-1 font-bold  bg-cyan-500"

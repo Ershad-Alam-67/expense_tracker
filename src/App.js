@@ -115,7 +115,6 @@ function App() {
       <div className="">
         <Header />
 
-        {/* Routes */}
         <Routes>
           <Route
             path="/"
