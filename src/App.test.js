@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import App from "./App"
-
+//10 test cases are added.
 test("renders welcome message", () => {
   render(<App />)
   const welcomeElement = screen.getByText(/Welcome to Expense Tracker/i)
